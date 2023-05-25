@@ -31,21 +31,18 @@ function useFeed() {
     setArticles(data)
   }, [])
 
-  useEffect(() => { 
-    setTimeout(refresh, 0)
-    setInterval(refresh, 1000 * 30)
-  }, [refresh])
+  useEffect(() => { refresh() }, [refresh])
 
-  return { url, articles }
+  return { url, articles, refresh }
 }
 
 export default function Home() {
-  const { url, articles } = useFeed()
+  const { url, articles, refresh } = useFeed()
   return <main className={'flex items-center justify-center'}>
     <div className={`w-full sm:w-1/2 min-h-screen pt-16
       flex flex-col items-start gap-8`}>
       <h1 className={'w-full px-4 py-6 font-bold text-4xl bg-purple-950'}>yNews API</h1>
-      <div className={'w-full px-4 py-6 whitespace-pre text-purple-200 bg-purple-950'}>
+      <div onClick={refresh} className={'w-full px-4 py-6 whitespace-pre text-purple-200 bg-purple-950'}>
         {`curl ${url}`}
       </div>
       <div className={'h-1/2 flex flex-col gap-4'}>

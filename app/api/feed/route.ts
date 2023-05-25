@@ -10,3 +10,5 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json(rows)
 }
+
+export const dynamic = 'forece-dynamic'
