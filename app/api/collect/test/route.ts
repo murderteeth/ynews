@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     if(rows.length) continue
 
     console.log('post summarizer task to qstash', id)
-    fetch(`${process.env.QSTASH}/${summarizer}`, {
+    const result = await fetch(`${process.env.QSTASH}/${summarizer}`, {
       method: 'POST',
       headers: {
         'Authorization': process.env.QSTASH_TOKEN,
@@ -31,6 +31,7 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({ id })
     })
+    if(!result.ok) throw result.statusText
   }
 
   return NextResponse.json({ status: 'ok' })
