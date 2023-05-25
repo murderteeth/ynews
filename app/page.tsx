@@ -24,7 +24,7 @@ function useFeed() {
 
 function useFeedUrl() {
   return useMemo(() => {
-    if(!window) return ''
+    if(typeof window === 'undefined') return ''
     const { protocol, host } = window.location
     return `${protocol}//${host}/api/feed`
   }, [])
