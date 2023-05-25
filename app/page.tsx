@@ -23,11 +23,13 @@ function useFeed() {
 }
 
 function useFeedUrl() {
-  return useMemo(() => {
-    if(typeof window === 'undefined') return ''
+  const [url, setUrl] = useState('')
+  useEffect(() => {
+    if(typeof window === 'undefined') return
     const { protocol, host } = window.location
-    return `${protocol}//${host}/api/feed`
-  }, [])
+    setUrl(`${protocol}//${host}/api/feed`)
+  }, [setUrl])
+  return url
 }
 
 export default function Home() {

@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
     persona: randomPersona(),
     current_date: (new Date()).toDateString(),
     publish_date: source.published,
-    template: source.text
+    text: source.text
   })
 
   const result = JSON.parse(await one_shot(prompt, STRONGEST_MODEL))
