@@ -11,17 +11,6 @@ interface Article {
   create_date: string
 }
 
-function useFeed() {
-  const [articles, setArticles] = useState<Article[]>([])
-  const fetchArticles = useCallback(async () => {
-    const res = await fetch('/api/feed')
-    const data = await res.json()
-    setArticles(data)
-  }, [])
-  useEffect(() => { fetchArticles() }, [fetchArticles])
-  return articles
-}
-
 function useFeedUrl() {
   const [url, setUrl] = useState('')
   useEffect(() => {
@@ -32,18 +21,35 @@ function useFeedUrl() {
   return url
 }
 
+function useFeed() {
+  const url = useFeedUrl()
+  const [articles, setArticles] = useState<Article[]>([])
+
+  const refresh = useCallback(async () => {
+    const res = await fetch('/api/feed')
+    const data = await res.json()
+    setArticles(data)
+  }, [])
+
+  useEffect(() => { 
+    setTimeout(refresh, 0)
+    setInterval(refresh, 1000 * 30)
+  }, [refresh])
+
+  return { url, articles }
+}
+
 export default function Home() {
-  const feed = useFeed()
-  const feedUrl = useFeedUrl()
+  const { url, articles } = useFeed()
   return <main className={'flex items-center justify-center'}>
     <div className={`w-full sm:w-1/2 min-h-screen pt-16
       flex flex-col items-start gap-8`}>
       <h1 className={'w-full px-4 py-6 font-bold text-4xl bg-purple-950'}>yNews API</h1>
       <div className={'w-full px-4 py-6 whitespace-pre text-purple-200 bg-purple-950'}>
-        {`curl ${feedUrl}`}
+        {`curl ${url}`}
       </div>
       <div className={'h-1/2 flex flex-col gap-4'}>
-        {feed && feed.map((article, i) => 
+        {articles && articles.map((article, i) => 
           <article key={i} className={'p-8 flex flex-col gap-2 border border-purple-400'}>
             <h2 className={'text-xl'}>
               <a href={article.url} target={'_blank'} rel={'noreferrer'}>{article.url}</a>
