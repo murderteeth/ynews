@@ -12,9 +12,9 @@ export async function one_shot(prompt: string, model: Model = DEFAULT_MODEL, tem
   if(process.env.NODE_ENV === 'development') {
     console.log()
     console.log('model', model)
-    console.log('prompt/ ---------------')
+    console.log('<prompt> ---------------')
     console.log(prompt)
-    console.log('prompt/ ---------------')
+    console.log('<prompt> ---------------')
     console.log()
   }
 
@@ -33,11 +33,11 @@ export async function multi_shot(messages: ChatCompletionRequestMessage[], model
   if(process.env.NODE_ENV === 'development') {
     console.log()
     console.log('model', model)
-    console.log('prompt/ ---------------')
+    console.log('<prompt> ---------------')
     messages.forEach(message => {
       console.log(`${message.role}: ${message.content}`)
     })
-    console.log('prompt/ ---------------')
+    console.log('<prompt> ---------------')
     console.log()
   }
 

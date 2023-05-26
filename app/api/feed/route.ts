@@ -3,10 +3,10 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {
   const { rows } = await sql`
-  SELECT url, title, summary, tags, create_date
-  FROM articles 
-  ORDER BY create_date 
-  DESC LIMIT 100`
+  SELECT url, source, persona, title, summary, tags, publish_date
+  FROM articles
+  ORDER BY modified_at DESC
+  LIMIT 100`
 
   return NextResponse.json(rows)
 }
