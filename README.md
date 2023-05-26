@@ -1,5 +1,7 @@
 # yNews
 
+
+![image](https://github.com/murderteeth/ynews/assets/89237203/81e968c4-d084-4315-a6c2-1fb560b80533)
 This project is build with Next.js, Vercel, and QStash. QStash is used for http queueing, [https://docs.upstash.com/qstash](https://docs.upstash.com/qstash).
 
 
