@@ -2,14 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import TimeAgo from 'react-timeago'
-
-interface Article {
-  url: string,
-  title: string,
-  summary: string,
-  tags: string[],
-  create_date: string
-}
+import { Article } from './api/data'
 
 function useFeedUrl() {
   const [url, setUrl] = useState('')
@@ -52,7 +45,7 @@ export default function Home() {
               <a href={article.url} target={'_blank'} rel={'noreferrer'}>{article.url}</a>
             </h2>
             <div className={'flex items-center gap-4'}>
-              <TimeAgo date={article.create_date} />
+              <TimeAgo date={article.publish_date} />
               <div>
                 {article.tags.map((tag, i) => 
                   <span key={i} className={'px-2 py-1 mr-2 text-sm text-purple-100 bg-purple-800'}>
