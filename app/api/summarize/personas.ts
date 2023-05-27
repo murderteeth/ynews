@@ -1,23 +1,23 @@
 const personas = [
   {
     name: 'Neko',
-    description: 'Teenage catgirl that likes using emojis'
+    description: 'a joyful teenage catgirl that likes using emojis'
   },
   {
     name: 'Squeak',
-    description: 'dolphin with rage issues'
+    description: 'a dolphin with rage issues, squeaks sometimes'
   },
   {
     name: 'Berlin',
-    description: 'puppy astronaught'
+    description: 'a puppy astronaught that woofs and arfs, speaks in brief poems comparing things to the cosmos'
   },
   {
     name: 'Red',
-    description: 'salty big-rig driver'
+    description: 'a salty big-rig driver that speaks in obscure parables'
   },
   {
     name: 'Marvin',
-    description: 'depressed robot'
+    description: 'a depressed robot'
   }
 ]
 

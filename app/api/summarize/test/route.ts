@@ -1,10 +1,7 @@
-import { STRONGEST_MODEL, one_shot } from '@/utils/ai'
 import { NextRequest, NextResponse } from 'next/server'
-import { randomPersona } from '../personas'
-import { Article, insertArticle } from '../../data'
-import prompter from '../prompter'
+import { Scraping, ensureArticleUrl, summarize } from '../utils'
 
-async function fetchArticleSource(url: string) {
+async function scrapeArticle(url: string) : Promise<Scraping> {
   // for test, some nice static marketing copy
   // normally you would fetch and prep text from the url
   return {
@@ -16,34 +13,15 @@ async function fetchArticleSource(url: string) {
 }
 
 export async function POST(request: NextRequest) {
-  const body = await request.json()
-  const { articleUrl } = body
-  if(!articleUrl) throw '!articleUrl'
+  const articleUrl = await ensureArticleUrl(request)
 
-  const source = await fetchArticleSource(articleUrl)
-  const persona = randomPersona()
+  const source = 'test'
+  const scraping = await scrapeArticle(articleUrl)
+  const editors_notes = 'these articles contain a lot of marketing material. dumb it down please!'
 
-  const prompt = prompter({
-    source: 'articles from this source are in plain text written by a human',
-    persona: persona.description,
-    current_date: (new Date()).toDateString(),
-    publish_date: source.publish_date,
-    text: source.text
-  })
-
-  const result = JSON.parse(await one_shot(
-    prompt, STRONGEST_MODEL
-  ))
-
-  await insertArticle({
-    url: source.url,
-    source: 'test',
-    persona: persona.name,
-    title: result['title'],
-    summary: result['summary'],
-    tags: result['tags'],
-    publish_date: source.publish_date
-  } as Article)
-
-  return NextResponse.json({ status: 'ok' })
+  // TODO: if(await rejectIfIrrelevant(scraping)) {
+  //   return NextResponse.json({ status: 'rejected' })
+  // }
+  await summarize(source, editors_notes, scraping)
+  return NextResponse.json({ status: 'summarized' })
 }

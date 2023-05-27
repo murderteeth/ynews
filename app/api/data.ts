@@ -8,25 +8,36 @@ export interface Article {
   summary: string,
   tags: string[],
   publish_date: string,
-  approved: boolean
+  approved: boolean,
+  summarized: boolean,
+  rejected: boolean
 }
 
-export async function articleExists(url: string, client?: VercelPoolClient) {
+export async function upsertArticle(url: string, client?: VercelPoolClient): Promise<Article> {
   if(!client) client = await db.connect()
-  const { rows } = await client.sql`SELECT * FROM articles WHERE url = ${url}`
-  return rows.length > 0
+  const result = await client.sql`
+    INSERT INTO articles (url)
+    VALUES (${url})
+    ON CONFLICT (url) DO UPDATE
+    SET url = EXCLUDED.url
+    RETURNING *;`
+  return result.rows[0] as Article
 }
 
-export async function insertArticle(article: Article) {
-  await sql`
-  INSERT INTO articles (url, source, persona, title, summary, tags, publish_date)
-  VALUES (
-    ${article.url}, 
-    ${article.source}, 
-    ${article.persona}, 
-    ${article.title}, 
-    ${article.summary}, 
-    ${article.tags as any}, 
-    ${article.publish_date}
-  )`
+export async function updateArticle(article: Article, client?: VercelPoolClient): Promise<void> {
+  if(!client) client = await db.connect()
+  await client.sql`
+    UPDATE articles
+    SET source = ${article.source},
+      persona = ${article.persona},
+      title = ${article.title},
+      summary = ${article.summary},
+      tags = ${article.tags as any},
+      publish_date = ${article.publish_date},
+      summarized = ${article.summarized || false},
+      rejected = ${article.rejected || false},
+      approved = ${article.approved || false},
+      modified_at = CURRENT_TIMESTAMP
+    WHERE url = ${article.url};
+  `;
 }

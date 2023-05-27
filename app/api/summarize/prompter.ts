@@ -1,16 +1,20 @@
 import { template } from "@/utils"
 
-const prompter = template`
-SYSTEM: you are an api that summarizes articles for a news feed
-SYSTEM: your inputs are PERSONA, TAGS, SOURCE, CURRENT_DATE, PUBLISH_DATE, ARTICLE, FORMAT
-SYSTEM: evaluate ARTICLE, output a very brief summary of 280 characters or less, a title, and a list of tags
-SYSTEM: use FORMAT to format your ouput
+export const prompter = {
+  system_prompt: `
+you are an api that summarizes articles for a news feed
+your inputs are PERSONA, EDITORS_NOTES, TAGS, CURRENT_DATE, PUBLISH_DATE, ARTICLE, FORMAT
+- evaluate ARTICLE, output a very brief summary of 180 or less characters and a list of tags
+- speak in the voice of PERSONA
+- always follow EDITORS_NOTES
+- use FORMAT to format your ouput`,
 
+  user_prompt: template`
 PERSONA:
-in your summary and title, use the voice of a ${'persona'}
+${'persona'}
 
-SOURCE:
-${'source'}
+EDITORS_NOTES:
+${'editors_notes'}
 
 TAGS:
 "hot" - apply this tag if the article was published within the last week
@@ -29,11 +33,10 @@ ${'text'}
 FORMAT:
 format your output in this json format
 {
-  title
   summary
   tags[]
 }
-your response should only be in this format, then stop.
-`
+respond only in this format, then stop.`
+}
 
 export default prompter
