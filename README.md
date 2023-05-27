@@ -1,9 +1,13 @@
 # yNews
+Breaking news by ai generated defi animals.
+
+- nice we used all the words
+- collects articles and events from various sources
+- summarizes what it finds using GPT
 
 ![image](https://github.com/murderteeth/ynews/assets/89237203/872a8cd1-707a-4520-9cbd-b55e1fcfdeb8)
 
-
-This project is build with Next.js, Vercel, and QStash. QStash is used for http queueing, [https://docs.upstash.com/qstash](https://docs.upstash.com/qstash).
+This project uses Next.js, Vercel, and QStash. QStash is used for http queueing, [https://docs.upstash.com/qstash](https://docs.upstash.com/qstash).
 
 
 ## Getting started
@@ -28,12 +32,14 @@ Initialize the database:
 ```sql
 CREATE TABLE articles (
   url VARCHAR(2048) NOT NULL PRIMARY KEY,
-  source VARCHAR(32) NOT NULL,
-  persona VARCHAR(32) NOT NULL,
-  title VARCHAR(256) NOT NULL,
-  summary TEXT NOT NULL,
-  tags VARCHAR(32)[] NOT NULL,
-  publish_date DATE NOT NULL,
+  source VARCHAR(32),
+  persona VARCHAR(32),
+  title VARCHAR(256),
+  summary TEXT,
+  tags VARCHAR(32)[],
+  publish_date DATE,
+  summarized BOOLEAN NOT NULL DEFAULT FALSE,
+  rejected BOOLEAN NOT NULL DEFAULT FALSE,
   approved BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -55,9 +61,9 @@ curl -XPOST \
 curl 'http://localhost:3000/api/feed'
 ```
 
-## Add a new article pipline
-1. Add a new collector endpoint at `app/api/collect/[source name]/route.ts`
-2. Add a new summarizer endpoint at `app/api/summarizer/[source name]/route.ts`
+## Add new article pipline
+1. Add a collector endpoint at `app/api/collect/[source name]/route.ts`
+2. Add a summarizer endpoint at `app/api/summarizer/[source name]/route.ts`
 3. Schedule QStash to call collector endpoint
 
 See the test collector and summarizer endpoints for reference.

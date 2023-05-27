@@ -6,15 +6,15 @@ export const STRONGEST_MODEL = 'gpt-4'
 export const MODELS = [DEFAULT_MODEL, STRONGEST_MODEL]
 export type Model = 'gpt-4' | 'gpt-3.5-turbo';
 
-export async function one_shot(prompt: string, model: Model = DEFAULT_MODEL, temperature = 0.4) {
+export async function complete(prompt: string, model: Model = DEFAULT_MODEL, temperature = 0.4) {
   const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_API_KEY }))
 
   if(process.env.NODE_ENV === 'development') {
     console.log()
     console.log('model', model)
-    console.log('<prompt> ---------------')
+    console.log('prompt> ---------------')
     console.log(prompt)
-    console.log('<prompt> ---------------')
+    console.log('-----------------------')
     console.log()
   }
 
@@ -27,17 +27,17 @@ export async function one_shot(prompt: string, model: Model = DEFAULT_MODEL, tem
   return top_choice(result as AxiosResponse<CreateChatCompletionResponse, any>)
 }
 
-export async function multi_shot(messages: ChatCompletionRequestMessage[], model: Model = DEFAULT_MODEL, temperature = 0.4) {
+export async function next_message(messages: ChatCompletionRequestMessage[], model: Model = DEFAULT_MODEL, temperature = 0.4) {
   const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_API_KEY }))
 
   if(process.env.NODE_ENV === 'development') {
     console.log()
     console.log('model', model)
-    console.log('<prompt> ---------------')
+    console.log('prompt> ---------------')
     messages.forEach(message => {
       console.log(`${message.role}: ${message.content}`)
     })
-    console.log('<prompt> ---------------')
+    console.log('-----------------------')
     console.log()
   }
 
