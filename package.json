@@ -10,6 +10,7 @@
     "pullenv": "vercel env pull .env.development.local"
   },
   "dependencies": {
+    "@octokit/rest": "^19.0.11",
     "@types/node": "20.2.3",
     "@types/react": "18.2.6",
     "@types/react-dom": "18.2.4",
