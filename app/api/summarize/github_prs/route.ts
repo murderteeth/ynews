@@ -1,9 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Scraping, ensureArticleUrl, summarize } from '../utils'
 
+require('dotenv').config();
+const { Octokit } = require('@octokit/rest');
+const openai = require('openai');
+
+const GITHUB_ACCESS_TOKEN = process.env.GITHUB_ACCESS_TOKEN;
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+
+const github = new Octokit({ auth: GITHUB_ACCESS_TOKEN });
+openai.apiKey = OPENAI_API_KEY;
+
+const orgName = 'yearn';
+
 async function scrapeArticle(url: string) : Promise<Scraping> {
   // for test, some nice static marketing copy
   // normally you would fetch and prep text from the url
+
+  // get org and repo from url, atm url is like: https://github.com/octocat/Hello-World/pull/1347
+  const repo = await github.repos.get({ owner: orgName, repo: name });
+
+  const prs = await github.paginate(github.pulls.list, { owner: orgName, repo: repo.name, state: 'open' });
+
   return {
     url,
     title: 'Yearn Finance: The Ultimate Yield',
