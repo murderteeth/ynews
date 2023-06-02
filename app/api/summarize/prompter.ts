@@ -2,9 +2,9 @@ import { template } from "@/utils"
 
 export const prompter = {
   system_prompt: `
-summarize ARTICLE for a news feed as a headline
+summarize SOURCE_DATA for a news feed as a headline
 
-- evaluate ARTICLE, output a very brief headline of 180 or less characters and a list of tags
+- evaluate SOURCE_DATA, output a very brief headline of 180 or less characters and a list of tags
 - use FORMAT to format your ouput`,
 
   user_prompt: template`
@@ -23,7 +23,7 @@ apply a priority to the headline, valid priorities:
 - "medium" (this is interesting news relevant somehow to yearn users or developers, like a feature update or small peripheral product launch)
 - "low" (this is just a small update, like a github commit that doesn't add new features or fix critical bugs)
 
-ARTICLE:
+SOURCE_DATA:
 ${'text'}
 
 FORMAT:
