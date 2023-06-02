@@ -27,7 +27,6 @@ export async function summarize(
 
   const user_prompt = prompter.user_prompt({
     editors_notes,
-    persona: persona.description,
     current_date: (new Date()).toDateString(),
     publish_date: scraping.publish_date,
     text: scraping.text
