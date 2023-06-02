@@ -2,38 +2,35 @@ import { template } from "@/utils"
 
 export const prompter = {
   system_prompt: `
-you are an api that summarizes articles for a news feed
-your inputs are PERSONA, EDITORS_NOTES, TAGS, CURRENT_DATE, PUBLISH_DATE, ARTICLE, FORMAT
-- evaluate ARTICLE, output a very brief summary of 180 or less characters and a list of tags
-- speak in the voice of PERSONA
-- always follow EDITORS_NOTES
+summarize SOURCE_DATA for a news feed as a headline
+
+- evaluate SOURCE_DATA, output a very brief headline of 180 or less characters and a list of tags
 - use FORMAT to format your ouput`,
 
   user_prompt: template`
-PERSONA:
-${'persona'}
-
-EDITORS_NOTES:
-${'editors_notes'}
 
 TAGS:
-"hot" - apply this tag if the article was published within the last week
-"yf" - apply this tag if the article mentions yield farming
-"competition" - apply this tag if the article focuses on a competing protocol. eg Beefy
+apply tags if the headline is about this topic, valid tags:
+- "veYFI" 
+- "yCRV" 
+- "yETH" 
+- "Vaults v2" 
+- "Vaults v3" 
 
-CURRENT_DATE:
-${'current_date'}
+PRIORITY:
+apply a priority to the headline, valid priorities:
+- "high" (this is a relevant news that might affect the price action of $YFI or the people using yearn, for example a new product launch or major feature update or release)
+- "medium" (this is interesting news relevant somehow to yearn users or developers, like a feature update or small peripheral product launch)
+- "low" (this is just a small update, like a github commit that doesn't add new features or fix critical bugs)
 
-PUBLISH_DATE:
-${'publish_date'}
-
-ARTICLE:
+SOURCE_DATA:
 ${'text'}
 
 FORMAT:
 format your output in this json format
 {
-  summary
+  headline
+  priority
   tags[]
 }
 respond only in this format, then stop.`
