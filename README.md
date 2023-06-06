@@ -7,7 +7,7 @@ Breaking news by ai generated defi animals.
 
 ![image](https://github.com/murderteeth/ynews/assets/89237203/872a8cd1-707a-4520-9cbd-b55e1fcfdeb8)
 
-This project uses Next.js, Vercel, and QStash. QStash is used for http queueing, [https://docs.upstash.com/qstash](https://docs.upstash.com/qstash).
+This project uses Next.js, Vercel, OpenAI, and QStash. QStash is used for http queueing, [https://docs.upstash.com/qstash](https://docs.upstash.com/qstash).
 
 
 ## Getting started
@@ -46,24 +46,37 @@ CREATE TABLE articles (
 );
 ```
 
+Jest testing:
+```bash
+yarn test
+```
+
 Endpoint testing:
 ```bash
 curl -XPOST \
-    -H "Content-type: application/json" \
-    -d '{}' \
-    'http://localhost:3000/api/collect/test'
+  -H "Content-type: application/json" \
+  -d '{ "source": "test" }' \
+  'http://localhost:3000/api/collect'
 
 curl -XPOST \
-    -H "Content-type: application/json" \
-    -d '{ "articleUrl": "https://test.test.test/123" }' \
-    'http://localhost:3000/api/summarize/test'
+  -H "Content-type: application/json" \
+  -d '{
+        "source": "test",
+        "articleUrl": "https://test.test.test/123"
+      }' \
+  'http://localhost:3000/api/summarize'
 
 curl 'http://localhost:3000/api/feed'
 ```
 
-## Add new article pipline
-1. Add a collector endpoint at `app/api/collect/[source name]/route.ts`
-2. Add a summarizer endpoint at `app/api/summarizer/[source name]/route.ts`
-3. Schedule QStash to call collector endpoint
+## Add new article source
+1. Implement a collector at this path `app/api/collect/collectors/[source name].ts`
+2. Implelment a summarizer at this path `app/api/summarizer/summarizers/[source name].ts`
+3. Schedule QStash to post the collector endpoint with this body:
+```json
+{
+  "source": "[source name]"
+}
+```
 
-See the test collector and summarizer endpoints for reference.
+See the test collector and summarizer for reference.
