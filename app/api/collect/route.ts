@@ -6,7 +6,7 @@ export interface Collector {
   collect(): Promise<string[]>
 }
 
-export async function queue(request: NextRequest, source: string, articleUrls: string[]) {
+async function queue(request: NextRequest, source: string, articleUrls: string[]) {
   if(!process.env.QSTASH) throw '!QSTASH'
   if(!process.env.QSTASH_TOKEN) throw '!QSTASH_TOKEN'
 
@@ -35,8 +35,8 @@ export async function POST(request: NextRequest) {
   const { source } = await request.json()
   if(!source) throw '!source'
 
-  const module = await import(`./collectors/${source}`)
-  const instance = module.default as Collector
+  const _module = await import(`./collectors/${source}`)
+  const instance = _module.default as Collector
   const articleUrls = await instance.collect()
   await queue(request, source, articleUrls)
 

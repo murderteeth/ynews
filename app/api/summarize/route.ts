@@ -16,7 +16,7 @@ export interface Summarizer {
   scrape(url: string): Promise<Scrap>
 }
 
-export async function summarize(
+async function summarize(
   source: string,
   summarizer: Summarizer,
   articleUrl: string
@@ -58,8 +58,8 @@ export async function POST(request: NextRequest) {
   if(!source) throw '!source'
   if(!articleUrl) throw '!articleUrl'
 
-  const module = await import(`./summarizers/${source}`)
-  const instance = module.default as Summarizer
+  const _module = await import(`./summarizers/${source}`)
+  const instance = _module.default as Summarizer
   const article = await summarize(source, instance, articleUrl)
   await updateArticle(article)
 
