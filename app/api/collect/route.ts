@@ -6,7 +6,7 @@ export interface Collector {
   collect(): Promise<string[]>
 }
 
-export async function queue(request: NextRequest, summarizer: string, articleUrls: string[]) {
+export async function queue(request: NextRequest, source: string, articleUrls: string[]) {
   if(!process.env.QSTASH) throw '!QSTASH'
   if(!process.env.QSTASH_TOKEN) throw '!QSTASH_TOKEN'
 
@@ -16,7 +16,7 @@ export async function queue(request: NextRequest, summarizer: string, articleUrl
     const article = await upsertArticle(articleUrl, client)
     if(article.summarized || article.rejected) continue
 
-    console.log('queue', { summarizer, articleUrl })
+    console.log('queue', { source, articleUrl })
 
     const result = await fetch(`${process.env.QSTASH}/${endpointUrl}`, {
       method: 'POST',
@@ -24,7 +24,7 @@ export async function queue(request: NextRequest, summarizer: string, articleUrl
         'Authorization': `Bearer ${process.env.QSTASH_TOKEN}`,
         'Content-type': 'application/json'
       },
-      body: JSON.stringify({ summarizer, articleUrl })
+      body: JSON.stringify({ source, articleUrl })
     })
 
     if(!result.ok) throw result.statusText
@@ -32,12 +32,13 @@ export async function queue(request: NextRequest, summarizer: string, articleUrl
 }
 
 export async function POST(request: NextRequest) {
-  const body = await request.json()
-  const { collector } = body
-  if(!collector) throw '!collector'
-  const module = await import(`./collectors/${collector}`)
-  const instance = new module.default() as Collector
+  const { source } = await request.json()
+  if(!source) throw '!source'
+
+  const module = await import(`./collectors/${source}`)
+  const instance = module.default as Collector
   const articleUrls = await instance.collect()
-  await queue(request, collector, articleUrls)
+  await queue(request, source, articleUrls)
+
   return NextResponse.json({ status: 'queued' })
 }
