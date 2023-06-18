@@ -19,7 +19,7 @@ QSTASH_TOKEN=
 ```
 Note, QStash vars are only needed if you want to automate the collectors in preview and production deployments.
 
-Setup your local environment:
+Setup your local environment
 ```bash
 yarn add vercel -g
 vercel link
@@ -28,7 +28,7 @@ yarn pullenv
 yarn dev
 ```
 
-Initialize the database:
+Initialize the database
 ```sql
 CREATE TABLE articles (
   url VARCHAR(2048) NOT NULL PRIMARY KEY,
@@ -46,27 +46,58 @@ CREATE TABLE articles (
 );
 ```
 
-Jest testing:
+Jest testing
 ```bash
 yarn test
 ```
 
-Endpoint testing:
+Endpoint testing
 ```bash
-curl -XPOST \
+curl -v \
   -H "Content-type: application/json" \
+  -H "key: ********" \
   -d '{ "source": "test" }' \
   'http://localhost:3000/api/collect'
 
-curl -XPOST \
+curl -v \
   -H "Content-type: application/json" \
+  -H "key: ********" \
   -d '{
         "source": "test",
         "articleUrl": "https://test.test.test/123"
       }' \
   'http://localhost:3000/api/summarize'
 
-curl 'http://localhost:3000/api/feed'
+curl -v 'http://localhost:3000/api/feed'
+```
+
+Schedule a QStash collector job
+```bash
+curl -v \
+  -H "Authorization: Bearer ********" \
+  -H "Upstash-Forward-key: ********" \
+  -H "Upstash-Cron: */30 * * * *" \
+  -H "Content-type: application/json" \
+  -d '{ "source": "test" }' \
+  'https://qstash.upstash.io/v1/publish/https://ynews-greatsword.vercel.app/api/collect'
+```
+
+Mannually post an article summary
+```bash
+curl -v \
+  -H "key: ********" \
+  -H "Content-type: application/json" \
+  -d '{ 
+        "url": "https://test.test.test/123",
+        "source": "test",
+        "title": "Yearn Finance: The Ultimate Yield",
+        "summary": "Yearn Finance helps peeps find the best yields in DeFi, automates yield farming, makes it easy for anyone!",
+        "tags": ["hot", "defi"],
+        "publish_date": "2023-05-27T00:00:00.000Z",
+        "summarized": "true",
+        "approved": "true"
+      }' \
+  'http://localhost:3000/api/article'
 ```
 
 ## Add new article source
