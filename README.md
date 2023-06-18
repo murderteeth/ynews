@@ -71,7 +71,19 @@ curl -v \
 curl -v 'http://localhost:3000/api/feed'
 ```
 
-Schedule a QStash collector job
+## Add new article source
+1. Implement a collector at this path `app/api/collect/collectors/[source name].ts`
+2. Implelment a summarizer at this path `app/api/summarizer/summarizers/[source name].ts`
+3. Schedule QStash to post the collector endpoint with this body:
+```json
+{
+  "source": "[source name]"
+}
+```
+
+See the test collector and summarizer for reference.
+
+## Schedule a QStash collector job
 ```bash
 curl -v \
   -H "Authorization: Bearer ********" \
@@ -82,7 +94,7 @@ curl -v \
   'https://qstash.upstash.io/v1/publish/https://ynews-greatsword.vercel.app/api/collect'
 ```
 
-Mannually post an article summary
+## Mannually post an article summary
 ```bash
 curl -v \
   -H "key: ********" \
@@ -99,15 +111,3 @@ curl -v \
       }' \
   'http://localhost:3000/api/article'
 ```
-
-## Add new article source
-1. Implement a collector at this path `app/api/collect/collectors/[source name].ts`
-2. Implelment a summarizer at this path `app/api/summarizer/summarizers/[source name].ts`
-3. Schedule QStash to post the collector endpoint with this body:
-```json
-{
-  "source": "[source name]"
-}
-```
-
-See the test collector and summarizer for reference.
