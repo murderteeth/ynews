@@ -1,4 +1,4 @@
-import { VercelPoolClient, db, sql } from "@vercel/postgres"
+import { VercelPoolClient, db } from '@vercel/postgres'
 
 export interface Article {
   url: string,
@@ -13,31 +13,46 @@ export interface Article {
   rejected: boolean
 }
 
-export async function upsertArticle(url: string, client?: VercelPoolClient): Promise<Article> {
+export async function upsertArticle(article: Article, client?: VercelPoolClient): Promise<Article> {
   if(!client) client = await db.connect()
   const result = await client.sql`
-    INSERT INTO articles (url)
-    VALUES (${url})
+    INSERT INTO articles (
+      url, 
+      source, 
+      persona, 
+      title, 
+      summary, 
+      tags, 
+      publish_date, 
+      approved, 
+      summarized, 
+      rejected, 
+      modified_at
+    ) VALUES (
+      ${article.url}, 
+      ${article.source}, 
+      ${article.persona}, 
+      ${article.title}, 
+      ${article.summary}, 
+      ${article.tags as any}, 
+      ${article.publish_date}, 
+      ${article.approved || false}, 
+      ${article.summarized || false}, 
+      ${article.rejected || false}, 
+      CURRENT_TIMESTAMP
+    )
     ON CONFLICT (url) DO UPDATE
-    SET url = EXCLUDED.url
+    SET url = EXCLUDED.url,
+        source = EXCLUDED.source,
+        persona = EXCLUDED.persona,
+        title = EXCLUDED.title,
+        summary = EXCLUDED.summary,
+        tags = EXCLUDED.tags,
+        publish_date = EXCLUDED.publish_date,
+        approved = EXCLUDED.approved,
+        summarized = EXCLUDED.summarized,
+        rejected = EXCLUDED.rejected,
+        modified_at = CURRENT_TIMESTAMP
     RETURNING *;`
   return result.rows[0] as Article
-}
-
-export async function updateArticle(article: Article, client?: VercelPoolClient): Promise<void> {
-  if(!client) client = await db.connect()
-  await client.sql`
-    UPDATE articles
-    SET source = ${article.source},
-      persona = ${article.persona},
-      title = ${article.title},
-      summary = ${article.summary},
-      tags = ${article.tags as any},
-      publish_date = ${article.publish_date},
-      summarized = ${article.summarized || false},
-      rejected = ${article.rejected || false},
-      approved = ${article.approved || false},
-      modified_at = CURRENT_TIMESTAMP
-    WHERE url = ${article.url};
-  `;
 }

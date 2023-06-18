@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@vercel/postgres'
-import { upsertArticle } from '../data'
+import { Article, upsertArticle } from '../data'
 
 export interface Collector {
   collect(): Promise<string[]>
@@ -13,7 +13,7 @@ async function queue(request: NextRequest, source: string, articleUrls: string[]
   const endpointUrl = `${(new URL(request.url)).origin}/api/summarize`
   const client = await db.connect()
   for(const articleUrl of articleUrls) {
-    const article = await upsertArticle(articleUrl, client)
+    const article = await upsertArticle({url: articleUrl} as Article, client)
     if(article.summarized || article.rejected) continue
 
     console.log('queue', { source, articleUrl })
@@ -22,6 +22,7 @@ async function queue(request: NextRequest, source: string, articleUrls: string[]
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.QSTASH_TOKEN}`,
+        'Upstash-Forward-key': process.env.APP_API_KEY || '',
         'Content-type': 'application/json'
       },
       body: JSON.stringify({ source, articleUrl })
@@ -33,7 +34,7 @@ async function queue(request: NextRequest, source: string, articleUrls: string[]
 
 export async function POST(request: NextRequest) {
   const { source } = await request.json()
-  if(!source) throw '!source'
+  if(!source) throw new NextResponse(null, { status: 400 })
 
   const _module = await import(`./collectors/${source}`)
   const instance = _module.default as Collector

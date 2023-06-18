@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { randomPersona } from './personas'
 import prompter from './prompter'
 import { STRONGEST_MODEL, next_message } from '@/utils/ai'
-import { Article, updateArticle } from '../data'
+import { Article, upsertArticle } from '../data'
 
 export interface Scrap {
   url: string,
@@ -55,13 +55,13 @@ async function summarize(
 
 export async function POST(request: NextRequest) {
   const { source, articleUrl } = await request.json()
-  if(!source) throw '!source'
-  if(!articleUrl) throw '!articleUrl'
+  if(!source) throw new NextResponse(null, { status: 400 })
+  if(!articleUrl) throw new NextResponse(null, { status: 400 })
 
   const _module = await import(`./summarizers/${source}`)
   const instance = _module.default as Summarizer
   const article = await summarize(source, instance, articleUrl)
-  await updateArticle(article)
+  await upsertArticle(article)
 
   return NextResponse.json({ status: 'summarized' })
 }
